@@ -51,7 +51,7 @@ final class HomeController extends AbstractController
         /* Retorna un objeto a traves del metodo render()
         Argumentos render()
         1- Plantilla a la que envio la informacion
-        2- un array asociativo que contiene los datos. en ese array las cclaves corresponden a 
+        2- un array asociativo que contiene los datos. en ese array las claves corresponden a 
         los nombres de variables en twig */
        return $this->render('home/index.html.twig', [
         'projectName' => 'Isueflow',
