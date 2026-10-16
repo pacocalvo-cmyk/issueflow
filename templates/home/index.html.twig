@@ -1,8 +1,13 @@
  
- {% extends "base.html.twig" %} 
-
-{% block title %}{{projectName}}{% endblock %} 
-
+ {#  Esta plantilla hereda de base.html.twig #}
+{% extends "base.html.twig" %}
+{#
+    Sobreescribimos el título de la página, usamos la variable projectName, esta
+    variable va a ser recibida desde el controlador, La insertamos entre llaves
+    dobles con su nombre
+#}
+{% block title %}{{ projectName }}{% endblock %}
+{# Inserto el cuerpo de la página de inicio #}
 {% block body %}
     <section class="hero">
         <p class="eyebrow">IFCT092PO . Proyecto del curso</p>
