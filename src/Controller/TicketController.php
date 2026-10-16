@@ -15,25 +15,25 @@ final class TicketController extends AbstractController
     */
     private const TICKETS = [
         [
-            'id' => 101,
+            'id' => 'INC-1001',
             'title' => 'No puedo acceder',
             'priority' => 'urgent',
             'status' => 'open',
         ],
         [
-            'id' => 102,
+            'id' => 'INC-1002',
             'title' => 'Error en factura',
             'priority' => 'high',
             'status' => 'in_progress',
         ],
         [
-            'id' => 103,
+            'id' => 'INC-1003',
             'title' => 'Actualizar datos',
             'priority' => 'normal',
             'status' => 'closed',
         ],
         [
-            'id' => 104,
+            'id' => 'INC-1004',
             'title' => 'El ordenador está en llamas',
             'priority' => 'urgent',
             'status' => 'in_progress',
@@ -49,8 +49,26 @@ final class TicketController extends AbstractController
     {
         return $this->render('ticket/index.html.twig', [
             'tickets' => self::TICKETS,
-            'title'=> 'Incidencias'
-            
+            'title' => 'Incidencias'
+
         ]);
+    }
+    /*ruta dinamica que muestra la información de un ticket en particular
+    {id} representa una parte variable de la URL*/
+
+
+    #[Route('/tickets/{id}', name: 'app_ticket_show', methods: ['GET'])]
+    public function show(string $id): Response
+    {
+        /*buscamo el ticket en el listado, pueden suceder que no exista */
+        /*array_find, disponible en php 8.4 o mas devuelve el primer elemento del array que
+         cumple con la condicion indicada por la funcion callback si no encuentra devuelve null*/
+        $ticket = array_find(self::TICKETS, fn($ticket) => $ticket['$id'] === $id);
+        if ($ticket === null) {
+            throw $this->createNotFoundException('No existe la incidencia');
+        }
+        /*si $ticket  no es null envio ala plantilla la informacion de la incidencia*/
+        return $this->render('ticket/show.html.twig', ['ticket' => $ticket]);
+
     }
 }
