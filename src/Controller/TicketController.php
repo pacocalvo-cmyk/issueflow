@@ -63,7 +63,7 @@ final class TicketController extends AbstractController
         /*buscamo el ticket en el listado, pueden suceder que no exista */
         /*array_find, disponible en php 8.4 o mas devuelve el primer elemento del array que
          cumple con la condicion indicada por la funcion callback si no encuentra devuelve null*/
-        $ticket = array_find(self::TICKETS, fn($ticket) => $ticket['$id'] === $id);
+        $ticket = array_find(self::TICKETS, fn($ticket) => $ticket['id'] === $id);
         if ($ticket === null) {
             throw $this->createNotFoundException('No existe la incidencia');
         }

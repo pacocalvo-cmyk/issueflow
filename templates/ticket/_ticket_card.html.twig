@@ -4,5 +4,7 @@
                     <h2>{{ ticket.title }}</h2>
                     <p>Prioridad: <strong>{{ ticket.priority }}</strong></p>
                     <p>Estado: <strong>{{ ticket.status }}</strong></p>
+                    {# agregamos un enlace a la vista  particuar de un ticket  #}
+                    <a href="{{ path('app_ticket_show', { id: ticket.id }) }}">ver detalle</a>
                 </div>
             </article>
