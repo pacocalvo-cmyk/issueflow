@@ -1,0 +1,18 @@
+<?php
+
+declare(strict_types= 1);
+
+namespace App\Model;
+
+/*prioridades  permitidas por el sistema issuefloqw
+el sistema permita solo 4 prioridades: urgent, high, normal, low.
+
+*/
+enum TicketPriority: string
+{
+case Urgent ="urgent";
+case High = "high";
+case Normal = "normal";
+case Low = "low";
+
+}

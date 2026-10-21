@@ -11,7 +11,7 @@ final class Ticket
     public function __construct(
         private string $id,
         private string $title,
-        private string $priority,
+        private TicketPriority $priority,
         private string $status
     ) {
     }
@@ -24,7 +24,7 @@ final class Ticket
     {
         return $this->title;
     }
-    public function getPriority(): string
+    public function getPriority(): TicketPriority
     {
         return $this->priority;
     }
@@ -36,38 +36,43 @@ final class Ticket
 
 
     public static function getAllTickets(): array
-    
     {
         return [
             new Ticket(
                 id: 'INC-1001',
                 title: 'No puedo acceder',
-                priority: 'urgent',
+                priority: TicketPriority::Urgent,
                 status: 'open'
             ),
             new Ticket(
                 id: 'INC-1002',
                 title: 'Error en factura',
-                priority: 'high',
+                priority: TicketPriority::High,
                 status: 'in_progress'
             ),
             new Ticket(
                 id: 'INC-1003',
                 title: 'Actualizar datos',
-                priority: 'normal',
+                priority: TicketPriority::Normal,
                 status: 'closed'
             ),
             new Ticket(
                 id: 'INC-1004',
                 title: 'El ordenador está en llamas',
-                priority: 'urgent',
+                priority: TicketPriority::Urgent,
                 status: 'in_progress'
+            ),
+            new Ticket(
+                id: 'INC-1005',
+                title: 'No me deja cambiar prioridad',
+                priority: TicketPriority::Low,
+                status: 'closed'
             )
         ];
     }
-/* Metodo find que encuentra un ticket en el listado, dado su id 
-    ?Ticket quiere decir que el método puede devolver o un Ticket o null
-    */
+    /* Metodo find que encuentra un ticket en el listado, dado su id 
+        ?Ticket quiere decir que el método puede devolver o un Ticket o null
+        */
     public static function find(string $id): ?Ticket
     {
         /* array_find(), disponible en PHP 8.4+ devuelve el primer elemento
@@ -75,7 +80,7 @@ final class Ticket
         Si no encuentra ningún elemento que cumpla la condición devuelve null */
         return array_find(
             Ticket::getAllTickets(),
-            fn (Ticket $ticket): bool => $ticket->getId() === $id
+            fn(Ticket $ticket): bool => $ticket->getId() === $id
         );
     }
 }
