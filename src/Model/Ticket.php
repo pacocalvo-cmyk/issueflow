@@ -3,7 +3,7 @@
 declare(strict_types=1);
 
 namespace App\Model;
-
+use InvalidArgumentException;
 final class Ticket
 {
 
@@ -13,10 +13,20 @@ final class Ticket
         private string $title,
         private TicketPriority $priority,
         private TicketStatus $status
-    ) {
+    )
+     {
+        /* normalizacion de title: eliminar espacios en blanco antes y después
+    $normalizatedTitle =trim($title) trim quita los espacios antes y despues de un texto*/
+$normalizatedTitle = trim($title);
+if ($normalizatedTitle ==="") {
+throw new \InvalidArgumentException("El titulo no puede estar vacio");
+
     }
-    /*creamos los getters para cada uno de los atributos */
-    public function getId(): string
+$this->title = $normalizatedTitle;    /*creamos los getters para cada uno de los atributos */
+  
+
+     }
+public function getId(): string
     {
         return $this->id;
     }
@@ -64,7 +74,13 @@ final class Ticket
             ),
             new Ticket(
                 id: 'INC-1005',
-                title: 'No me deja cambiar prioridad',
+                title: 'No me deja cambiar la contraseña',
+                priority: TicketPriority::Low,
+                status: TicketStatus::Open
+            ),
+            new Ticket(
+                id: 'INC-1006',
+                title: "el pc no va",
                 priority: TicketPriority::Low,
                 status: TicketStatus::Open
             )
