@@ -27,4 +27,5 @@ Implementamos el metodo getlabel() para asignar el texto que verá el usuario*/
             self::High => "Alta",
         };
     }
+    
 }
