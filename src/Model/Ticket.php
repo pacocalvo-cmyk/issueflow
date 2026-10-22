@@ -61,58 +61,9 @@ final class Ticket
     {
         return $this->status->isClosed();
     }
-    public static function getAllTickets(): array
-    {
-        return [
-            new Ticket(
-                id: 'INC-1001',
-                title: 'No puedo acceder',
-                priority: TicketPriority::Urgent,
-                status: TicketStatus::Open
-            ),
-            new Ticket(
-                id: 'INC-1002',
-                title: 'Error en factura',
-                priority: TicketPriority::High,
-                status: TicketStatus::Open
-            ),
-            new Ticket(
-                id: 'INC-1003',
-                title: 'Actualizar datos',
-                priority: TicketPriority::Normal,
-                status: TicketStatus::Closed
-            ),
-            new Ticket(
-                id: 'INC-1004',
-                title: 'El ordenador está en llamas',
-                priority: TicketPriority::Urgent,
-                status: TicketStatus::InProgress
-            ),
-            new Ticket(
-                id: 'INC-1005',
-                title: 'No me deja cambiar la contraseña',
-                priority: TicketPriority::Low,
-                status: TicketStatus::Closed
-            ),
-            new Ticket(
-                id: 'INC-1006',
-                title: "el pc no va",
-                priority: TicketPriority::Low,
-                status: TicketStatus::Open
-            )
-        ];
-    }
-    /* Metodo find que encuentra un ticket en el listado, dado su id 
-        ?Ticket quiere decir que el método puede devolver o un Ticket o null
-        */
-    public static function find(string $id): ?Ticket
-    {
-        /* array_find(), disponible en PHP 8.4+ devuelve el primer elemento
-        del array que cumple con la condición indicada por la función callback.
-        Si no encuentra ningún elemento que cumpla la condición devuelve null */
-        return array_find(
-            Ticket::getAllTickets(),
-            fn(Ticket $ticket): bool => $ticket->getId() === $id
-        );
-    }
+    
+    
+   
+    
+    
 }
