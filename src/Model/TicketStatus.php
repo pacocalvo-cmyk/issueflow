@@ -17,5 +17,8 @@ case InProgress  = "in_progress";
           
         };
     }
-
+ public function isClosed(): bool
+    {
+        return $this === self::Closed;
+    }
 }

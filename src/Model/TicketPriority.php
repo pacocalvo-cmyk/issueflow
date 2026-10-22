@@ -27,5 +27,10 @@ Implementamos el metodo getlabel() para asignar el texto que verá el usuario*/
             self::High => "Alta",
         };
     }
-    
+    /*metodo que verifica si la prioridad es urgente
+    se implementa aqui porque este es el responsable de prioridades de ticket*/
+    public function isUrgent(): bool
+    {
+        return $this === self::Urgent;
+    }
 }

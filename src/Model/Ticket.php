@@ -13,31 +13,30 @@ final class Ticket
         private string $title,
         private TicketPriority $priority,
         private TicketStatus $status
-    )
-     {
+    ) {
         /*validar el formato de id: INC- seguido de 4 digitos
         para ello usamos una regex: una expresión regular: : /^INC_\d{4}$/  
         pregmacht devuelve 1 cuando es valida,  compara el texto con el regex para ver si es validp  */
 
-if(preg_match('/^INC-\d{4}$/', $this->id) !==1){
-    throw new InvalidArgumentException("el id no tiene formato valido");
-}
+        if (preg_match('/^INC-\d{4}$/', $this->id) !== 1) {
+            throw new InvalidArgumentException("el id no tiene formato valido");
+        }
 
 
 
 
         /* normalizacion de title: eliminar espacios en blanco antes y después
     $normalizatedTitle =trim($title) trim quita los espacios antes y despues de un texto*/
-$normalizatedTitle = trim($title);
-if ($normalizatedTitle ==="") {
-throw new InvalidArgumentException("El titulo no puede estar vacio");
+        $normalizatedTitle = trim($title);
+        if ($normalizatedTitle === "") {
+            throw new InvalidArgumentException("El titulo no puede estar vacio");
+
+        }
+        $this->title = $normalizatedTitle;    /*creamos los getters para cada uno de los atributos */
+
 
     }
-$this->title = $normalizatedTitle;    /*creamos los getters para cada uno de los atributos */
-  
-
-     }
-public function getId(): string
+    public function getId(): string
     {
         return $this->id;
     }
@@ -54,8 +53,14 @@ public function getId(): string
         return $this->status;
     }
 
-
-
+    public function isUrgent(): bool
+    {
+        return $this->priority->isUrgent();
+    }
+    public function isClosed(): bool
+    {
+        return $this->status->isClosed();
+    }
     public static function getAllTickets(): array
     {
         return [
@@ -87,7 +92,7 @@ public function getId(): string
                 id: 'INC-1005',
                 title: 'No me deja cambiar la contraseña',
                 priority: TicketPriority::Low,
-                status: TicketStatus::Open
+                status: TicketStatus::Closed
             ),
             new Ticket(
                 id: 'INC-1006',
