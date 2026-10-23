@@ -6,11 +6,12 @@ namespace App\Contract;
 
 use App\Model\Ticket;
 /*esto es uun contrato que define que necesia mi aplicación de cualquier catalogo de tickets
-la interfaz describe las operaciones deben existir, pero no como se llevana acabo*/
+la interfaz describe las operaciones deben existir, pero no como se llevan a acabo*/
 
 interface TicketCatalogInterface
-{
+{ /*necesito el metodo get() que me da los tikectes y un find() que busque uno determinado*/
+
     public function getTickets(): array;
 
-public function find(string $id): ?Ticket;
+    public function find(string $id): ?Ticket;
 }
