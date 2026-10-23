@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Controller;
 use App\Model\Ticket;
 use App\Service\TicketCatalog;
+use App\Service\TicketSlaCalculator;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -12,9 +13,11 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 final class TicketController extends AbstractController
 {
     /*constructo de ticket controller
-    cuando symfony  levanta la aplicación, crea una instancia del controlador*/
+    cuando symfony  levanta la aplicación, crea una instancia del controlador
+    Ynyecto servicio SlaCalculator*/
 public function __construct(
-private readonly TicketCatalog $ticketCatalog
+private readonly TicketCatalog $ticketCatalog,
+private readonly TicketSlaCalculator $slaCalculator
 )
 {}
 
@@ -47,7 +50,10 @@ private readonly TicketCatalog $ticketCatalog
             throw $this->createNotFoundException('No existe la incidencia');
         }
         /*si $ticket  no es null envio ala plantilla la informacion de la incidencia*/
-        return $this->render('ticket/show.html.twig', ['ticket' => $ticket]);
-
+        return $this->render('ticket/show.html.twig', [
+            'ticket' => $ticket,
+       
+            
+        'responseTargetHours' => $this->slaCalculator->getResponseTargetHours($ticket),]);
     }
 }
