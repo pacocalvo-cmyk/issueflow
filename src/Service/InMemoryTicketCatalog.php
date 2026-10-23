@@ -3,13 +3,14 @@
 declare(strict_types=1);
 
 namespace App\Service;
-
+use App\Contract\TicketCataloginterface;
 use App\Model\Ticket;
 use App\Model\TicketPriority;
 use App\Model\TicketStatus;
 
-/* Catálogo temporal de incidencias en memoria */
-final class TicketCatalog
+/* Catálogo temporal de incidencias en memoria 
+implementa la interfacce TicketCatalogInterface*/
+final class InMemoryTicketCatalog implements TicketCatalogInterface
 {
     // Atributo que almacena el listado de las incidencias
     private array $tickets;
