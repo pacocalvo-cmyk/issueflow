@@ -1,0 +1,18 @@
+{%  extends 'base.html.twig'  %}
+{%  block title %}Pagina no encontrada - Issueflow {% endblock %}
+{% block body %}
+
+<section class="error-page">
+
+<p class="eyerbrow">Error 404</p>
+<h1>No encontramos esa pagina</h1>
+
+<p>La direccion debe ser incorrecta o el recurso ha dejado de existir</p>
+<p> <a href="{{  path('app_home') }}"> Volver al inicio </p>
+
+</section>
+
+
+
+
+{% endblock  %}
