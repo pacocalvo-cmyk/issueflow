@@ -6,6 +6,9 @@ namespace App\Service;
 use App\Contract\TicketSlaCalculatorInterface;
 use App\Model\Ticket;
 use App\Model\TicketPriority;
+
+#[AsAlias(TicketCatalogInterface::class)]
+
 final class TicketSlaCalculator implements TicketSlaCalculatorInterface
 {
 
