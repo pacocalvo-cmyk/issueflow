@@ -49,7 +49,7 @@ final class TicketController extends AbstractController
         $ticket = $this->ticketCatalog->find($id);
 
         if ($ticket === null) {
-            /* guardo la informacion en el loger para investigaciones posteriores*/
+            /* guardo la informacion en el log para investigaciones posteriores*/
             $this->logger->warning('Se solicitó una incidencia no existente',[
             'ticket_id' => $id,
             'route' => 'app_ticket_show',
