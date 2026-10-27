@@ -27,6 +27,7 @@ final class Ticket
 
         /* normalizacion de title: eliminar espacios en blanco antes y después
     $normalizatedTitle =trim($title) trim quita los espacios antes y despues de un texto*/
+    
         $normalizatedTitle = trim($title);
         if ($normalizatedTitle === "") {
             throw new InvalidArgumentException("El titulo no puede estar vacio");
