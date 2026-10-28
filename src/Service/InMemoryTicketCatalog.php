@@ -30,7 +30,8 @@ final class InMemoryTicketCatalog implements TicketCatalogInterface
                 title: 'Error en factura',
                 priority: TicketPriority::High,
                 status: TicketStatus::InProgress
-            ),new Ticket(
+            ),
+            new Ticket(
                 id: 'INC-1003',
                 title: 'Actualizar datos',
                 priority: TicketPriority::Normal,
