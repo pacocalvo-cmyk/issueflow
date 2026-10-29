@@ -3,7 +3,7 @@
 declare(strict_types=1);
 
 namespace App\Controller;
-use App\Model\Ticket;
+use App\Entity\Ticket;
 use App\Contract\TicketCatalogInterface;
 use App\Contract\TicketSlaCalculatorInterface;
 use Symfony\Component\Routing\Attribute\Route;
@@ -37,21 +37,21 @@ final class TicketController extends AbstractController
         ]);
     }
     /*ruta dinamica que muestra la información de un ticket en particular
-    {id} representa una parte variable de la URL*/
+    {code} representa una parte variable de la URL*/
 
 
-    #[Route('/tickets/{id}', name: 'app_ticket_show', methods: ['GET'])]
-    public function show(string $id): Response
+    #[Route('/tickets/{code}', name: 'app_ticket_show', methods: ['GET'])]
+    public function show(string $code): Response
     {
         /*buscamo el ticket en el listado, pueden suceder que no exista */
         /*array_find, disponible en php 8.4 o mas devuelve el primer elemento del array que
          cumple con la condicion indicada por la funcion callback si no encuentra devuelve null*/
-        $ticket = $this->ticketCatalog->find($id);
+        $ticket = $this->ticketCatalog->findByCode($code);
 
         if ($ticket === null) {
             /* guardo la informacion en el log para investigaciones posteriores*/
             $this->logger->warning('Se solicitó una incidencia no existente',[
-            'ticket_id' => $id,
+            'ticket_id' => $code,
             'route' => 'app_ticket_show',
             ]);
             throw $this->createNotFoundException('No existe la incidencia');
