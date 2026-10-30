@@ -6,6 +6,7 @@ namespace App\Entity;
 use InvalidArgumentException;
 use App\Model\TicketPriority;
 use App\Model\TicketStatus;
+use App\Repository\TicketRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Console\Attribute\Option;
@@ -16,7 +17,7 @@ Entity Doctrine
 
 */
 
-#[ORM\Entity]//decimos que la clase es una entidad doctrine
+#[ORM\Entity(repositoryClass: TicketRepository::class)]//decimos que la clase es una entidad doctrine
 #[ORM\Table(name: "tickets")]//asignamos la tabla correspondiente en la base de datos
 final class Ticket
 {
