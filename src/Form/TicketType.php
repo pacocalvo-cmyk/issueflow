@@ -6,6 +6,7 @@ namespace App\Form;
 
 use App\Entity\Category;
 use App\Entity\User;
+use App\Form\Model\TicketCreateData;
 use App\Model\TicketPriority;
 use App\Model\TicketStatus;
 use Symfony\Component\Form\AbstractType;
@@ -14,7 +15,7 @@ use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\Extension\Core\Type\EnumType;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
-
+use Symfony\Component\OptionsResolver\OptionsResolver;
 /**
  * Describe los campos necesarios del formulario para crear un Ticket
  * El Form Type no guarda nada en la base de datos, simplemente define
@@ -60,7 +61,7 @@ final class TicketType extends AbstractType
             ->add('assignee', EntityType::class, [
                 'class' => User::class,
                 'label' => 'Asignado a',
-                'choicel_label' => 'name',
+                'choice_label' => 'name',
                 'required' => false,
                 'placeholder' => 'Sin asignar'
             ])
@@ -68,4 +69,17 @@ final class TicketType extends AbstractType
                 'label' => 'Crear incidencia' // Etiqueta del botón
             ]);
     }
+
+    /* confifigura el DTo para el mapeo*/
+
+    public function configureOptions(OptionsResolver $resolver): void
+    {
+
+        $resolver->setDefaults([
+            'data_class' => TicketCreateData::class,
+
+        ]);
+    }
+
+
 }
