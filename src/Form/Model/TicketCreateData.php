@@ -7,12 +7,22 @@ namespace App\Form\Model;
 
 use App\Entity\Category;
 use App\Entity\User;
-use APP\Entity\Ticket;
+use App\Entity\Ticket;
 use App\Model\TicketPriority;
 use App\Model\TicketStatus;
+
 use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 
 
+/*validador de doctrine que impide repetir
+ */
+#[UniqueEntity(
+    fields: ['code'],
+    entityClass: Ticket::class,
+    message: 'Ya existe una incidencia con ese código',
+    errorPath: 'code'
+)]
 final class TicketCreateData
 {
     #[Assert\NotBlank(
