@@ -1,21 +1,41 @@
 {#  Esta plantilla hereda de base.html.twig #}
 {% extends "base.html.twig" %}
+
 {# Sobreescribir el título #}
 {% block title %}{{ title }}{% endblock %}
+
 {# Inserto el cuerpo de la página de /tickets: el listado de todos los tickets #}
 {% block body %}
     <div class="page-header">
         <div>
             <p class="eyebrow">IssueFlow</p>
             <h1>{{ title }}</h1>
-            <a href="{{path('app_ticket_new')}}">Nueva incidencia</a>
         </div>
+        <a href="{{ path('app_ticket_new') }}">Nueva incidencia</a>
     </div>
+
+    {#
+        Mostramos un enlance a el último ticket visitado,
+        este código del ticket se recuperó de la sesión.
+    #}
+    {% if lastTicketCode %}
+        <p class="session-note">
+            Última incidencia consultada:
+            <a href="{{ path('app_ticket_show', { code: lastTicketCode }) }}">{{ lastTicketCode }}</a>
+        </p>
+    {% endif %}
+    
     <div class="ticket-list">
         {# Recorremos el array de tickets que el controlador suministró #}
         {% for ticket in tickets %}
+            {#
+                Reutilizamos un fragmento de plantilla para cada tarjeta.
+                "only" limita el contexto del fragmento a la variable ticket,
+                evitando dependencias ocultas con otras variables de la vista.
+            #}
             {% include 'ticket/_ticket_card.html.twig' with {'ticket': ticket} only %}
         {% else %}
+            {# Twig ejecuta este bloque si la colección está vacía (no hay tickets) #}
             <p>No hay incidencias disponibles</p>
         {% endfor %}
     </div>

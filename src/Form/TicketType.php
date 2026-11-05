@@ -16,6 +16,7 @@ use Symfony\Component\Form\Extension\Core\Type\EnumType;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+
 /**
  * Describe los campos necesarios del formulario para crear un Ticket
  * El Form Type no guarda nada en la base de datos, simplemente define
@@ -70,16 +71,14 @@ final class TicketType extends AbstractType
             ]);
     }
 
-    /* confifigura el DTo para el mapeo*/
-
+    /**
+     * Configura el dto que se usará para mapear los datos del formulario a la entidad Ticket
+     * Esto permite que Symfony Form haga el mapeo automáticamente, y que aplique las validaciones definidas en el dto
+     */
     public function configureOptions(OptionsResolver $resolver): void
     {
-
         $resolver->setDefaults([
             'data_class' => TicketCreateData::class,
-
         ]);
     }
-
-
 }
