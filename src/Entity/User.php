@@ -7,16 +7,18 @@ namespace App\Entity;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use InvalidArgumentException;
-
+use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
+use Symfony\Component\Security\Core\User\UserInterface;
 /**
  * Usuario mínimo de IssueFlow para asignar tickets
+ * para utilixar usr com autentificacion esta debe implementar userinterface y passworautenthentifireuserinterface
  */
 #[ORM\Entity]
 #[ORM\Table(name: 'users')]
-final class User
+final class User implements UserInterface, PasswordAuthenticatedUserInterface
 {
     /**
-     * Identificador técnico (id) de base de datos.
+     * Identificador técnico (id) de base de datos.sert\
      * Comienza con un valor null porque una entidad recién
      * creada aún no ha sido insertada.
      * El valor de id será asignado al momento de persistirla
@@ -25,6 +27,9 @@ final class User
     #[ORM\GeneratedValue] // Indica que es un valor autogenerado
     #[ORM\Column(type: Types::BIGINT, options: ['unsigned' => true])] // Si no especifico nombre de la columna, esta toma el nombre del atributo
     private ?int $id = null;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $password  = null;
 
     public function __construct(
         #[ORM\Column(length: 120)]
@@ -68,4 +73,26 @@ final class User
     {
         return $this->email;
     }
-}
+
+    public function getUserIdentifier(): string{
+return $this->email;
+
+    }
+
+    public function getRoles(): array
+    {
+return['ROLE_USER'];
+    }
+
+    public function getPassword(): ?string{
+        return $this->password;
+    }
+    public function setPassword(string $hash): void
+    {
+
+    $this->password = $hash;
+    }
+    
+    
+    
+    }
