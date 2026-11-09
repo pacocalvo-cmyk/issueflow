@@ -14,13 +14,18 @@ namespace App\Controller;
 use Symfony\Component\Routing\Attribute\Route;
 // Importamos la clase Response de Symfony para crear los objetos de respuesta
 use Symfony\Component\HttpFoundation\Response;
-/* necesito el metodo render () de la clase contrroller, necesitamos primero importar la clase astracontroller 
-/* Creamos la clase correspondiente a nuestro controlador
-Tiene el mismo nombre que el archivo en src/Controller*/
+
+/* Para poder usar el método render() de la clase AbstractController,
+   necesitamos primero importar la clase AbstractController, 
+   y luego extender nuestra clase HomeController de ella.
+*/
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 
-/*Usamos el modificador final para que nadie herede de ella */
+/* Creamos la clase correspondiente a nuestro controlador
+Tiene el mismo nombre que el archivo en src/Controller
+Usamos el modificador final para que nadie herede de ella */
 
 final class HomeController extends AbstractController
 {
@@ -44,21 +49,15 @@ final class HomeController extends AbstractController
     */
     public function index(): Response
     {
-        // Creamos las variables $projectName y $message
-        $projectName = 'IssueFlow';
-        $message = 'Symfony ha recibido la petición y ha devuelto una respuesta';
-
-        /* Retorna un objeto a traves del metodo render()
-        Argumentos render()
-        1- Plantilla a la que envio la informacion
-        2- un array asociativo que contiene los datos. en ese array las claves corresponden a 
-        los nombres de variables en twig */
-       return $this->render('home/index.html.twig', [
-        'projectName' => 'Isueflow',
-        'message' => 'Symfony ha recibido la petición y ha devuelto una respuesta'
-       ]);
-
-        
+        /* Retorna un objeto Response a través del metodo render().
+        Argumentos de render():
+        1- Plantilla a la que le envío la información.
+        2- Un array asociativo que contiene los datos. En ese array las claves
+        corresponden a los nombres de "variables" en Twig */
+        return $this->render('home/index.html.twig', [
+            'projectName' => 'IssueFlow',
+            'message' => 'Symfony ha recibido la petición y ha devuelto una respuesta'
+        ]);
     }
 
     /* Agregamos una nueva ruta, para el URL /health 
@@ -67,6 +66,10 @@ final class HomeController extends AbstractController
     con la indicación que es texto plano lo que va en el cuerpo: text/plain.
     */
     #[Route('/health', name: 'app_health', methods: ['GET'])]
+    #[IsGranted(
+        'ROLE_DEV',
+        message: 'Necesitas permisos de desarrollador para ver el diagnóstico de la app.'
+    )]
     public function health(): Response
     {
         return new Response(

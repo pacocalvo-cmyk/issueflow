@@ -14,6 +14,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Psr\Log\LoggerInterface;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 final class TicketController extends AbstractController
 {
@@ -27,13 +28,13 @@ final class TicketController extends AbstractController
         private readonly TicketSlaCalculatorInterface $slaCalculator,
         private readonly LoggerInterface $logger,
         private readonly EntityManagerInterface $entityManager
-    )
-    {}
+    ) {
+    }
 
-   /* Crear la ruta /tickets que muestra el listado de todos los tickets
-    Por convención se identifica con index a la ruta que muestra un listado
-    del recurso (en este caso tickets)
-    */
+    /* Crear la ruta /tickets que muestra el listado de todos los tickets
+     Por convención se identifica con index a la ruta que muestra un listado
+     del recurso (en este caso tickets)
+     */
     #[Route('/tickets', name: 'app_ticket_index', methods: ['GET'])]
     public function index(Request $request): Response
     {
@@ -63,6 +64,11 @@ final class TicketController extends AbstractController
      * se hace una redirección a la página del ticket recién creado (ruta show)
      */
     #[Route('/tickets/new', name: 'app_ticket_new', methods: ['GET', 'POST'])]
+
+    #[IsGranted(
+        'ROLE_AGENT',
+        message: 'Necesitas permisos de agente para crear incidencias.'
+    )]
     public function new(Request $request): Response
     {
         // Crear un objeto TicketCreateData (DTO) para recibir la información del formulario

@@ -9,16 +9,18 @@ use Doctrine\ORM\Mapping as ORM;
 use InvalidArgumentException;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
+
 /**
- * Usuario mínimo de IssueFlow para asignar tickets
- * para utilixar usr com autentificacion esta debe implementar userinterface y passworautenthentifireuserinterface
+ * Usuario mínimo de IssueFlow para asignar tickets.
+ * Para utilizar User como nuestra entidad de autenticación, esta
+ * debe implementar UserInterface y PasswordAuthenticatedUserInterface
  */
 #[ORM\Entity]
 #[ORM\Table(name: 'users')]
 final class User implements UserInterface, PasswordAuthenticatedUserInterface
 {
     /**
-     * Identificador técnico (id) de base de datos.sert\
+     * Identificador técnico (id) de base de datos.
      * Comienza con un valor null porque una entidad recién
      * creada aún no ha sido insertada.
      * El valor de id será asignado al momento de persistirla
@@ -28,8 +30,17 @@ final class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(type: Types::BIGINT, options: ['unsigned' => true])] // Si no especifico nombre de la columna, esta toma el nombre del atributo
     private ?int $id = null;
 
+    /**
+     * Guardamos siempre el HASH de la contraseña, nunca la contraseña plana
+     */
     #[ORM\Column(length: 255, nullable: true)]
-    private ?string $password  = null;
+    private ?string $password = null;
+
+    /**
+     * Los roles se almacenan como JSON en la base de datos.
+     */
+    #[ORM\Column(type: Types::JSON, nullable: true)]
+    private ?array $roles = [];
 
     public function __construct(
         #[ORM\Column(length: 120)]
@@ -74,25 +85,47 @@ final class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this->email;
     }
 
-    public function getUserIdentifier(): string{
-return $this->email;
+    /**
+     * Implementamos los métodos de las interfaces UserInterface y PasswordAuthenticatedUserInterface
+     */
 
+    // Método getUserIdentifier() que devuelve el identificador público (username / nombre de usuario) para ingreso
+    public function getUserIdentifier(): string
+    {
+        return $this->email;    
     }
 
+    // Método getRoles() que devuelve el listado de roles de un usuario
     public function getRoles(): array
     {
-return['ROLE_USER'];
+        // El listado de roles es igual al atributo roles si no es null, en caso contrario
+        // lo inicializamos con un arreglo vacío
+        $roles = $this->roles ?? [];
+
+        // Por defecto, por regla de negocio,
+        // siempre agregamos el rol base ROLE_USER a todos los usuarios
+        $roles[] = 'ROLE_USER';
+
+        // Retornamos un arreglos solo con valores no nulos y únicos
+        return array_values(array_unique($roles));
     }
 
-    public function getPassword(): ?string{
+    // Metodo setRoles() para modificar los roles de un usuario
+    public function setRoles(array $roles): void
+    {
+        // Asignamos como roles el arreglo pero solo con valores no nulos y únicos
+        $this->roles = array_values(array_unique($roles));
+    }
+
+    // Método getPassword() que devuelve la contraseña del usuario
+    public function getPassword(): ?string
+    {
         return $this->password;
     }
+
+    // Método setPassword() que recibe un hash y lo asigna al password
     public function setPassword(string $hash): void
     {
-
-    $this->password = $hash;
+        $this->password = $hash;
     }
-    
-    
-    
-    }
+}
