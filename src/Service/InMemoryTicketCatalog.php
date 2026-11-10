@@ -11,7 +11,7 @@ use App\Model\TicketStatus;
 /* Catálogo temporal de incidencias en memoria 
 implementa la interfacce TicketCatalogInterface*/
 
-final class InMemoryTicketCatalog implements TicketCatalogInterface
+final class InMemoryTicketCatalog //implements TicketCatalogInterface//
 {
     // Atributo que almacena el listado de las incidencias
     private array $tickets;
