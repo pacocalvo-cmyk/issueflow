@@ -8,6 +8,9 @@ use App\Contract\TicketCatalogInterface;
 use App\Entity\Ticket;
 use App\Form\Model\TicketSearchCriteria;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\ORM\Tools\Pagination\OffsetPaginator;
+use Doctrine\ORM\Tools\Pagination\Window;
+use Doctrine\ORM\Tools\Pagination\WindowPage;
 use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Component\DependencyInjection\Attribute\AsAlias;
 
@@ -50,9 +53,11 @@ final class TicketRepository extends ServiceEntityRepository implements TicketCa
     }
 
     /**
-     * Método que devuelve un listado de incidencias dado unos criterios
+     * Método que devuelve una pagina de resultados dado unos criterios
+     * $page indica el numero de pagina solicitada
+     * $pagesize cuantos elementos en cada pagina
      */
-    public function search(TicketSearchCriteria $criteria): array
+    public function search(TicketSearchCriteria $criteria, int $page, int $pageSize): WindowPage
     {
         /**
          * Construimos una queryBuilder que pide todos los tickets,
@@ -68,7 +73,7 @@ final class TicketRepository extends ServiceEntityRepository implements TicketCa
             ->addSelect('assignee')
             // Ordena por id de manera descendente
             ->orderBy('ticket.id', 'DESC');
-        
+
         // Agregamos los criterios a $queryBuilder si son válidos
 
         // Verificar el criterio de búsqueda y normalizarlo
@@ -88,7 +93,7 @@ final class TicketRepository extends ServiceEntityRepository implements TicketCa
                 // previamente, transforma $search a minúscula
                 // por seguridad, insertamos los valores de nuestras variables con setParameter,
                 // y no directamente en la instrucción andWhere
-                ->setParameter('search', '%'.strtolower($search).'%');
+                ->setParameter('search', '%' . strtolower($search) . '%');
         }
 
         // Aplicamos filtro por prioridad si no es null
@@ -112,8 +117,22 @@ final class TicketRepository extends ServiceEntityRepository implements TicketCa
                 ->setParameter('category', $criteria->category);
         }
 
-        // getQuery() extrae la query de $queryBuilder y getResult() da el listado de resultados
-        // correspondientes a esa query
-        return $queryBuilder->getQuery()->getResult();
+        //primero me aseguro que el numero de pagina nunca pueda sr menor que uno
+//la funcion max devuelve el mayor de los argumentos
+        $page = max(1, $page);
+
+        /**
+         * del listado resultadoss posibles solo solicito los correspondientes
+         * a la pagina definida por $page, que serian maximo $pageSize resultados  
+         * offsetpaginator crea un paginador basado en OFFSET u LIMIT
+         * OFFSET  le indica a la base cuantos resultados debe saltarse
+         * LIMIT le indica a la base de datos cusntos resultados maximos debe retornar
+         * poner falso evita problema de paginacion
+         */
+        return (new OffsetPaginator(fetchJoinCollection: false))->paginate(
+            $queryBuilder,
+            Window::fromPageNumberAndSize($page, $pageSize)
+        );
+
     }
 }

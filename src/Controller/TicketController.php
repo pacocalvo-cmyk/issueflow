@@ -30,13 +30,13 @@ final class TicketController extends AbstractController
         private readonly TicketSlaCalculatorInterface $slaCalculator,
         private readonly LoggerInterface $logger,
         private readonly EntityManagerInterface $entityManager
-    )
-    {}
+    ) {
+    }
 
-   /* Crear la ruta /tickets que muestra el listado de todos los tickets
-    Por convención se identifica con index a la ruta que muestra un listado
-    del recurso (en este caso tickets)
-    */
+    /* Crear la ruta /tickets que muestra el listado de todos los tickets
+     Por convención se identifica con index a la ruta que muestra un listado
+     del recurso (en este caso tickets)
+     */
     #[Route('/tickets', name: 'app_ticket_index', methods: ['GET'])]
     public function index(Request $request): Response
     {
@@ -56,18 +56,24 @@ final class TicketController extends AbstractController
         $criteria = new TicketSearchCriteria();
 
         // Creamos el objeto formulario
-        $filterForm = $this->createForm(TicketFilterType::class, $criteria,[
+        $filterForm = $this->createForm(TicketFilterType::class, $criteria, [
             'action' => $this->generateUrl('app_ticket_index'),
         ]);
 
         // Proceso el formulario
         $filterForm->handleRequest($request);
 
+        //Extraer de la url el numero de paina solicitada
+        $page = $request->query->getInt('page');
+
+        //pido la pagina al repositorio, establezco un tamaño de página
+        $ticketPage = $this->ticketCatalog->search($criteria, $page, 3);
+
         return $this->render('ticket/index.html.twig', [
-            'tickets' => $this->ticketCatalog->search($criteria),
             'title' => 'Incidencias',
             'lastTicketCode' => $lastTicketCode,
-            'filterForm' => $filterForm
+            'filterForm' => $filterForm,
+            'ticketPage' => $ticketPage
         ]);
     }
 
@@ -137,7 +143,8 @@ final class TicketController extends AbstractController
 
             // Luego de persistir el ticket en la BD, redirigimos a la página de detalle (show)
             return $this->redirectToRoute(
-                'app_ticket_show', ['code' => $ticket->getCode()]
+                'app_ticket_show',
+                ['code' => $ticket->getCode()]
             );
         }
         /**
