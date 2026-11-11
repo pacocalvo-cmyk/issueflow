@@ -117,6 +117,12 @@ final class TicketRepository extends ServiceEntityRepository implements TicketCa
                 ->setParameter('category', $criteria->category);
         }
 
+         if ($criteria->assignee !== null) {
+            $queryBuilder
+                ->andWhere('ticket.assignee = :assignee')
+                ->setParameter('assignee', $criteria->assignee);
+        }
+
         //primero me aseguro que el numero de pagina nunca pueda sr menor que uno
 //la funcion max devuelve el mayor de los argumentos
         $page = max(1, $page);
