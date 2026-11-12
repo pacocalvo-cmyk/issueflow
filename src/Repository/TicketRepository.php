@@ -53,9 +53,9 @@ final class TicketRepository extends ServiceEntityRepository implements TicketCa
     }
 
     /**
-     * Método que devuelve una pagina de resultados dado unos criterios
-     * $page indica el numero de pagina solicitada
-     * $pagesize cuantos elementos en cada pagina
+     * Método que devuelve una paágina de resultados dado unos criterios
+     * $page indica cual es el número de página solicitada
+     * $pageSize indica cuántos elementos hay en cada página
      */
     public function search(TicketSearchCriteria $criteria, int $page, int $pageSize): WindowPage
     {
@@ -73,7 +73,7 @@ final class TicketRepository extends ServiceEntityRepository implements TicketCa
             ->addSelect('assignee')
             // Ordena por id de manera descendente
             ->orderBy('ticket.id', 'DESC');
-
+        
         // Agregamos los criterios a $queryBuilder si son válidos
 
         // Verificar el criterio de búsqueda y normalizarlo
@@ -93,7 +93,7 @@ final class TicketRepository extends ServiceEntityRepository implements TicketCa
                 // previamente, transforma $search a minúscula
                 // por seguridad, insertamos los valores de nuestras variables con setParameter,
                 // y no directamente en la instrucción andWhere
-                ->setParameter('search', '%' . strtolower($search) . '%');
+                ->setParameter('search', '%'.strtolower($search).'%');
         }
 
         // Aplicamos filtro por prioridad si no es null
@@ -117,28 +117,28 @@ final class TicketRepository extends ServiceEntityRepository implements TicketCa
                 ->setParameter('category', $criteria->category);
         }
 
-         if ($criteria->assignee !== null) {
+        // Aplicamos filtro por assignee si no es null
+        if ($criteria->assignee !== null) {
             $queryBuilder
                 ->andWhere('ticket.assignee = :assignee')
                 ->setParameter('assignee', $criteria->assignee);
         }
 
-        //primero me aseguro que el numero de pagina nunca pueda sr menor que uno
-//la funcion max devuelve el mayor de los argumentos
-        $page = max(1, $page);
-
         /**
-         * del listado resultadoss posibles solo solicito los correspondientes
-         * a la pagina definida por $page, que serian maximo $pageSize resultados  
-         * offsetpaginator crea un paginador basado en OFFSET u LIMIT
-         * OFFSET  le indica a la base cuantos resultados debe saltarse
-         * LIMIT le indica a la base de datos cusntos resultados maximos debe retornar
-         * poner falso evita problema de paginacion
+         * Del listado de resultados posibles solo solicito los correspondientes
+         * a la página definida por $page, que serían máximo $pageSize resultados
+         * OffsetPaginator crea un paginador basado en OFFSET y LIMIT
+         * OFFSET le indica a la BD cúantos resultados debe "saltarse" del listado
+         * LIMIT le indica a la BD cuántos resultados máximos debe retornar
+         * fetchJoinCollection: false evita problemas habituales de paginación con relaciones OneToMany o ManyToMany
+         * paginate() prepara y ejecuta la consulta paginada y devuelve el resultado
+         * $queryBuilder es la consulta en sí que se quiere ejecutar
+         * Window::fromPageNumberAndSize define la ventana de resultados: $page es el número de página
+         * y $pageSize la cantidad de elementos por página
          */
         return (new OffsetPaginator(fetchJoinCollection: false))->paginate(
             $queryBuilder,
             Window::fromPageNumberAndSize($page, $pageSize)
         );
-
     }
 }

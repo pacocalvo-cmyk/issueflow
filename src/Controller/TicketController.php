@@ -10,19 +10,18 @@ use App\Form\Model\TicketCreateData;
 use App\Form\Model\TicketSearchCriteria;
 use App\Form\TicketFilterType;
 use App\Form\TicketType;
+use App\Service\TicketPaginator;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Psr\Log\LoggerInterface;
+use Symfony\Component\HttpFoundation\Exception\BadRequestException;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 final class TicketController extends AbstractController
 {
-    //creo constante private size para evitar el uso de "numeros magicos
-private const PAGE_SIZE = 3;
-
     /* Constructor de TicketController 
     Cuando symfony levanta la aplicación, crea una instancia del controlador.
     Inyecto el servicio TicketCatalog
@@ -32,14 +31,15 @@ private const PAGE_SIZE = 3;
         private readonly TicketCatalogInterface $ticketCatalog,
         private readonly TicketSlaCalculatorInterface $slaCalculator,
         private readonly LoggerInterface $logger,
-        private readonly EntityManagerInterface $entityManager
-    ) {
-    }
+        private readonly EntityManagerInterface $entityManager,
+        private readonly TicketPaginator $ticketPaginator,
+    )
+    {}
 
-    /* Crear la ruta /tickets que muestra el listado de todos los tickets
-     Por convención se identifica con index a la ruta que muestra un listado
-     del recurso (en este caso tickets)
-     */
+   /* Crear la ruta /tickets que muestra el listado de todos los tickets
+    Por convención se identifica con index a la ruta que muestra un listado
+    del recurso (en este caso tickets)
+    */
     #[Route('/tickets', name: 'app_ticket_index', methods: ['GET'])]
     public function index(Request $request): Response
     {
@@ -59,37 +59,24 @@ private const PAGE_SIZE = 3;
         $criteria = new TicketSearchCriteria();
 
         // Creamos el objeto formulario
-        $filterForm = $this->createForm(TicketFilterType::class, $criteria, [
+        $filterForm = $this->createForm(TicketFilterType::class, $criteria,[
             'action' => $this->generateUrl('app_ticket_index'),
         ]);
 
         // Proceso el formulario
         $filterForm->handleRequest($request);
 
-        /*Extraer de la url el numero entero de pagina solicitada usa filter_var para validar un numero entero
-        y si la validacion falla le asigna 1*/
-        $page = filter_var($request->query->get('page'), FILTER_VALIDATE_INT, ['options' => ['default' => 1]]);
-
-        //pido la pagina al repositorio, establezco un tamaño de página
-//getpagecount devueelve el numero tota
-
-        $ticketPage = $this->ticketCatalog->search($criteria, $page, self::PAGE_SIZE);
-
-        if ($ticketPage->getPageNumber() > $ticketPage->getPageCount()) {
-            $ticketPage = $this->ticketCatalog->search(
-                $criteria,
-                $ticketPage->getPageCount(),
-                self::PAGE_SIZE
-            );
-
-        }
-
+        /**
+         * Usar el servicio TicketPaginator para obtener la página
+         * adecuada
+         */
+        $ticketPage = $this->ticketPaginator->getTicketPage($criteria, $request->query->get('page'));
 
         return $this->render('ticket/index.html.twig', [
             'title' => 'Incidencias',
             'lastTicketCode' => $lastTicketCode,
             'filterForm' => $filterForm,
-            'ticketPage' => $ticketPage
+            'ticketPage' => $ticketPage,
         ]);
     }
 
@@ -159,8 +146,7 @@ private const PAGE_SIZE = 3;
 
             // Luego de persistir el ticket en la BD, redirigimos a la página de detalle (show)
             return $this->redirectToRoute(
-                'app_ticket_show',
-                ['code' => $ticket->getCode()]
+                'app_ticket_show', ['code' => $ticket->getCode()]
             );
         }
         /**
