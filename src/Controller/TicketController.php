@@ -20,6 +20,9 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 final class TicketController extends AbstractController
 {
+    //creo constante private size para evitar el uso de "numeros magicos
+private const PAGE_SIZE = 3;
+
     /* Constructor de TicketController 
     Cuando symfony levanta la aplicación, crea una instancia del controlador.
     Inyecto el servicio TicketCatalog
@@ -63,11 +66,24 @@ final class TicketController extends AbstractController
         // Proceso el formulario
         $filterForm->handleRequest($request);
 
-        //Extraer de la url el numero de paina solicitada
-        $page = $request->query->getInt('page');
+        /*Extraer de la url el numero entero de pagina solicitada usa filter_var para validar un numero entero
+        y si la validacion falla le asigna 1*/
+        $page = filter_var($request->query->get('page'), FILTER_VALIDATE_INT, ['options' => ['default' => 1]]);
 
         //pido la pagina al repositorio, establezco un tamaño de página
-        $ticketPage = $this->ticketCatalog->search($criteria, $page, 3);
+//getpagecount devueelve el numero tota
+
+        $ticketPage = $this->ticketCatalog->search($criteria, $page, self::PAGE_SIZE);
+
+        if ($ticketPage->getPageNumber() > $ticketPage->getPageCount()) {
+            $ticketPage = $this->ticketCatalog->search(
+                $criteria,
+                $ticketPage->getPageCount(),
+                self::PAGE_SIZE
+            );
+
+        }
+
 
         return $this->render('ticket/index.html.twig', [
             'title' => 'Incidencias',
