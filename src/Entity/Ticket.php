@@ -116,6 +116,26 @@ final class Ticket
         return $this->status;
     }
 
+    public function changeTitle(string $title): void
+    {
+        $title = trim($title);
+        if ($title === '') {
+            throw new InvalidArgumentException('El título no puede estar vacío');
+        }
+
+        $this->title = $title;
+    }
+
+    public function changePriority(TicketPriority $priority): void
+    {
+        $this->priority = $priority;
+    }
+
+    public function changeStatus(TicketStatus $status): void
+    {
+        $this->status = $status;
+    }
+
     // Desde Ticket puedo ver su assignee
     public function getAssignee(): ?User
     {
