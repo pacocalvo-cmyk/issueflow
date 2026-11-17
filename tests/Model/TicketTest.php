@@ -30,7 +30,7 @@ final class TicketTest extends TestCase
     {
         // Preparamos los datos y construimos el objeto que queremos probar
         $ticket = new Ticket(
-            id: 'INC-1001',
+            code: 'INC-1001',
             title: '        No puedo iniciar sesión           ',
             priority: TicketPriority::Urgent,
             status: TicketStatus::Open,
@@ -52,7 +52,7 @@ final class TicketTest extends TestCase
 
         // Intentamos crear un ticket con un título vacío
         new Ticket(
-            id: 'INC-1003',
+            code: 'INC-1003',
             title: '',
             priority: TicketPriority::High,
             status: TicketStatus::Open,
@@ -86,7 +86,7 @@ final class TicketTest extends TestCase
 
         // Intentamos crear un ticket con un id inválido
         new Ticket(
-            id: $invalidId,
+            code: $invalidId,
             title: 'Incidencia válida',
             priority: TicketPriority::High,
             status: TicketStatus::Open,
@@ -97,13 +97,13 @@ final class TicketTest extends TestCase
     public function it_returns_all_ticket_values_through_getters(): void
     {
         $ticket = new Ticket(
-            id: 'INC-1001',
+            code: 'INC-1001',
             title: 'Error de acceso',
             priority: TicketPriority::Urgent,
             status: TicketStatus::Open,
         );
 
-        self::assertSame('INC-1001', $ticket->getId());
+        self::assertSame('INC-1001', $ticket->getCode());
         self::assertSame('Error de acceso', $ticket->getTitle());
         self::assertSame(TicketPriority::Urgent, $ticket->getPriority());
         self::assertSame(TicketStatus::Open, $ticket->getStatus());
@@ -113,7 +113,7 @@ final class TicketTest extends TestCase
     public function it_reports_whether_the_ticket_is_urgent_and_closed(): void
     {
         $ticket = new Ticket(
-            id: 'INC-1003',
+            code: 'INC-1003',
             title: 'Incidencia válida',
             priority: TicketPriority::Urgent,
             status: TicketStatus::Closed

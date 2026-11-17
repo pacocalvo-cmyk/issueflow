@@ -34,7 +34,7 @@ final class TicketSlaCalculatorTest extends TestCase
     public function it_calculates_the_response_target_for_each_priority(TicketPriority $priority, int $expectedHours)
     {
         $ticket = new Ticket(
-            id: 'INC-1001',
+            code: 'INC-1001',
             title: 'Incidencia de prueba',
             priority: $priority,
             status: TicketStatus::Open

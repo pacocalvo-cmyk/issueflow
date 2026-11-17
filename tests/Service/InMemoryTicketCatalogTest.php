@@ -15,10 +15,10 @@ final class InMemoryTicketCatalogTest extends TestCase
     public function it_finds_an_existing_ticket(): void
     {
         $catalog = new InMemoryTicketCatalog();
-        $ticket = $catalog->find('INC-1001');
+        $ticket = $catalog->findByCode('INC-1001');
 
         self::assertInstanceOf(Ticket::class, $ticket);
-        self::assertSame('INC-1001', $ticket->getId());
+        self::assertSame('INC-1001', $ticket->getCode());
     }
 
     #[Test]
@@ -26,7 +26,7 @@ final class InMemoryTicketCatalogTest extends TestCase
     {
         $catalog = new InMemoryTicketCatalog();
 
-        self::assertNull($catalog->find('INC-5555'));
+        self::assertNull($catalog->findByCode('INC-5555'));
     }
 
     #[Test]
