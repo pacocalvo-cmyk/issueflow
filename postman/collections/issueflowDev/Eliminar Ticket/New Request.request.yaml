@@ -1,4 +1,5 @@
 $kind: http-request
-url: ""
-method: GET
+name: Eliminar ticket
+url: http://localhost:8000/api/tickets/INC-1025
+method: DELETE
 order: 1000

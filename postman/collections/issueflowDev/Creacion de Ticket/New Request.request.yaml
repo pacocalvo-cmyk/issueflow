@@ -1,4 +1,17 @@
 $kind: http-request
-url: ""
-method: GET
+name: Crear ticket
+url: http://localhost:8000/api/tickets
+method: POST
 order: 1000
+headers:
+  - key: Content-Type
+    value: application/json
+body:
+  type: json
+  content: |-
+    {
+      "code": "INC-1026",
+      "title": "Error de autenticación",
+      "priority": "high",
+      "status": "open"
+    }

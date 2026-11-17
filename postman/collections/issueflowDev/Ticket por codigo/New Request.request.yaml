@@ -1,4 +1,5 @@
 $kind: http-request
-url: ""
+name: Consultar ticket por código
+url: http://localhost:8000/api/tickets/INC-1025
 method: GET
 order: 1000

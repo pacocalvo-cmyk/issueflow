@@ -1,4 +1,14 @@
 $kind: http-request
-url: ""
-method: GET
+name: Actualizar ticket
+url: http://localhost:8000/api/tickets/INC-1025
+method: PATCH
 order: 1000
+headers:
+  - key: Content-Type
+    value: application/json
+body:
+  type: json
+  content: |-
+    {
+      "title": "Título actualizado"
+    }
