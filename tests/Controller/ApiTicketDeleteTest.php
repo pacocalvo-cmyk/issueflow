@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Tests\Controller;
 
 use App\Contract\TicketCatalogInterface;
+use App\Api\Mapper\TicketResponseMapper;
 use App\Controller\ApiTicketController;
 use App\Entity\Ticket;
 use App\Model\TicketPriority;
@@ -66,7 +67,7 @@ final class ApiTicketDeleteTest extends TestCase
 
     private function controller(TicketCatalogInterface $catalog, EntityManagerInterface $entityManager): ApiTicketController
     {
-        $controller = new ApiTicketController(new TicketPaginator($catalog), $entityManager);
+        $controller = new ApiTicketController(new TicketPaginator($catalog), $entityManager, new TicketResponseMapper());
         $controller->setContainer(new ContainerBuilder());
 
         return $controller;
