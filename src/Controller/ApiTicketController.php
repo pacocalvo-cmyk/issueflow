@@ -16,18 +16,16 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\HttpKernel\Attribute\MapQueryString;
-use App\Contract\TicketCatalogInterface;
 use App\Entity\Ticket;
 use App\Service\TicketPaginator;
 use Doctrine\ORM\EntityManagerInterface;
-use Symfony\Component\HttpKernel\Attribute\MapRequestPayload;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 use JsonException;
+use Symfony\Component\HttpKernel\Attribute\MapRequestPayload;
 
 final class ApiTicketController extends AbstractController
 {
     public function __construct(
-        private readonly TicketCatalogInterface $ticketCatalog,
         private readonly TicketPaginator $ticketPaginator,
         private readonly EntityManagerInterface $entityManager,
     ) {}
@@ -139,73 +137,16 @@ final class ApiTicketController extends AbstractController
      * Ruta para solicitar al API un ticket por su código
      */
     #[Route('/api/tickets/{code}', name: 'app_api_ticket_show', methods: ['GET'])]
-    public function show(string $code): JsonResponse
+    public function show(Ticket $ticket): JsonResponse
     {
-        // En API diferenciamos un formato inválido (400) de un formato válido pero inexistente (404)
-
-        // Verificamos que el formato sea válido
-        if (preg_match('/^INC-\d{4}$/', $code) !== 1) {
-            return $this->json(
-                [
-                    'error' => [
-                        'code' => 'invalid_ticket_code',
-                        'message' => 'El código debe tener el formato INC-0000'
-                    ]
-                ],
-                Response::HTTP_BAD_REQUEST,
-            );
-        }
-
-        // Si el code tiene un formato válido, buscamos el ticket en la base de datos
-        $ticket = $this->ticketCatalog->findByCode($code);
-
-        // Si el ticket no existe, devolvemos un error
-        if ($ticket === null) {
-            return $this->json(
-                [
-                    'error' => [
-                        'code' => 'ticket_not_found',
-                        'message' => 'La incidencia solicitada no existe'
-                    ]
-                ],
-                Response::HTTP_NOT_FOUND
-            );
-        }
-
-        // Si el ticket existe devolvemos el ticket en el formato correspondiente
         return $this->json([
             'ticket' => $this->ticketToArray($ticket),
         ]);
     }
 
     #[Route('/api/tickets/{code}', name: 'app_api_ticket_delete', methods: ['DELETE'])]
-    public function delete(string $code): Response
+    public function delete(Ticket $ticket): Response
     {
-        if (preg_match('/^INC-\d{4}$/', $code) !== 1) {
-            return $this->json(
-                [
-                    'error' => [
-                        'code' => 'invalid_ticket_code',
-                        'message' => 'El código debe tener el formato INC-0000',
-                    ],
-                ],
-                Response::HTTP_BAD_REQUEST,
-            );
-        }
-
-        $ticket = $this->ticketCatalog->findByCode($code);
-        if ($ticket === null) {
-            return $this->json(
-                [
-                    'error' => [
-                        'code' => 'ticket_not_found',
-                        'message' => 'La incidencia solicitada no existe',
-                    ],
-                ],
-                Response::HTTP_NOT_FOUND,
-            );
-        }
-
         $this->entityManager->remove($ticket);
         $this->entityManager->flush();
 
@@ -213,23 +154,8 @@ final class ApiTicketController extends AbstractController
     }
 
     #[Route('/api/tickets/{code}', name: 'app_api_ticket_update', methods: ['PATCH'])]
-    public function update(string $code, Request $request, ValidatorInterface $validator): JsonResponse
+    public function update(Ticket $ticket, Request $request, ValidatorInterface $validator): JsonResponse
     {
-        if (preg_match('/^INC-\d{4}$/', $code) !== 1) {
-            return $this->json(['error' => [
-                'code' => 'invalid_ticket_code',
-                'message' => 'El código debe tener el formato INC-0000',
-            ]], Response::HTTP_BAD_REQUEST);
-        }
-
-        $ticket = $this->ticketCatalog->findByCode($code);
-        if ($ticket === null) {
-            return $this->json(['error' => [
-                'code' => 'ticket_not_found',
-                'message' => 'La incidencia solicitada no existe',
-            ]], Response::HTTP_NOT_FOUND);
-        }
-
         try {
             $decoded = json_decode($request->getContent(), false, 512, JSON_THROW_ON_ERROR);
         } catch (JsonException) {
