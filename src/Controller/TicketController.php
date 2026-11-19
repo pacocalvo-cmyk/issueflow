@@ -19,6 +19,8 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpFoundation\Exception\BadRequestException;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
+use App\Form\Model\TicketEditData;
+use App\Form\TicketEditType;
 
 final class TicketController extends AbstractController
 {
@@ -33,13 +35,13 @@ final class TicketController extends AbstractController
         private readonly LoggerInterface $logger,
         private readonly EntityManagerInterface $entityManager,
         private readonly TicketPaginator $ticketPaginator,
-    )
-    {}
+    ) {
+    }
 
-   /* Crear la ruta /tickets que muestra el listado de todos los tickets
-    Por convención se identifica con index a la ruta que muestra un listado
-    del recurso (en este caso tickets)
-    */
+    /* Crear la ruta /tickets que muestra el listado de todos los tickets
+     Por convención se identifica con index a la ruta que muestra un listado
+     del recurso (en este caso tickets)
+     */
     #[Route('/tickets', name: 'app_ticket_index', methods: ['GET'])]
     public function index(Request $request): Response
     {
@@ -59,7 +61,7 @@ final class TicketController extends AbstractController
         $criteria = new TicketSearchCriteria();
 
         // Creamos el objeto formulario
-        $filterForm = $this->createForm(TicketFilterType::class, $criteria,[
+        $filterForm = $this->createForm(TicketFilterType::class, $criteria, [
             'action' => $this->generateUrl('app_ticket_index'),
         ]);
 
@@ -146,7 +148,8 @@ final class TicketController extends AbstractController
 
             // Luego de persistir el ticket en la BD, redirigimos a la página de detalle (show)
             return $this->redirectToRoute(
-                'app_ticket_show', ['code' => $ticket->getCode()]
+                'app_ticket_show',
+                ['code' => $ticket->getCode()]
             );
         }
         /**
@@ -161,6 +164,61 @@ final class TicketController extends AbstractController
             'form' => $form,
         ]);
     }
+
+    
+
+    #[Route('/tickets/{code}/edit', name: 'app_ticket_edit', methods: ['GET', 'POST'])]
+
+    #[IsGranted(
+        'ROLE_AGENT',
+        message: 'Necesitas permisos de agente para modificar incidencias.'
+    )]
+
+    public function edit(string $code, Request $request): Response
+    {
+        $ticket = $this->ticketCatalog->findByCode($code);
+
+        if ($ticket === NULL) {
+            throw $this->createNotFoundException('No existe la incidencia');
+        }
+
+       $data = TicketEditData::fromTicket($ticket);
+
+        $form = $this->createForm(TicketEditType::class, $data);
+
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $data->applyToTicket($ticket);
+
+            $this->entityManager->flush();
+
+            $this->addFlash(
+                'success',
+                sprintf('Incidencia %s actualizada correctamente.', $ticket->getCode())
+            );
+
+            return $this->redirectToRoute(
+                'app_ticket_index',
+                
+            );
+        }
+
+        return $this->render('ticket/edit.html.twig', [
+            'form' => $form,
+            'ticket' => $ticket,
+        ]);
+
+
+
+    }
+
+
+
+
+
+
+
 
     /* Ruta dinámica que muestra la información de un ticket en particular 
     {code} representa una parte variable de la URL

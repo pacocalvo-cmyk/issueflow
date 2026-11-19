@@ -63,17 +63,16 @@ final class Ticket
 
         #[ORM\Column(length: 20, enumType: TicketPriority::class)]
         private TicketPriority $priority,
-        
+
         #[ORM\Column(length: 20, enumType: TicketStatus::class)]
         private TicketStatus $status
-    )
-    {
+    ) {
         /*  Validar el formato de code: INC- seguido de cuatro dígitos
             Para ello usamos una regex: regular expression (expresión regular): '/^INC-\d{4}$/'
             La función preg_match() compara una cadena de texto con la regex y devuelve 1
             si la cadena de texto es válida
         */
-        if(preg_match('/^INC-\d{4}$/', $this->code) !== 1) {
+        if (preg_match('/^INC-\d{4}$/', $this->code) !== 1) {
             throw new InvalidArgumentException('El código no tiene un formato válido');
         }
 
@@ -147,8 +146,25 @@ final class Ticket
     {
         return $this->category;
     }
+    public function setTitle(string $title): void
+    {
+        $this->title = $title;
 
-    // Setters para los atributos de las relaciones
+    }
+
+    public function setPriority(TicketPriority $priority): void
+    {
+        $this->priority = $priority;
+    }
+    public function setStatus(TicketStatus $status): void
+    {
+        $this->status = $status;
+    }
+    
+
+
+
+    //Setters para los atributos de las relaciones
     // Asignamos un usuario a un ticket
     public function assignTo(?User $assignee): void
     {

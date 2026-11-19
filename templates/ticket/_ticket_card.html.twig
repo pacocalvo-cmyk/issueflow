@@ -13,7 +13,7 @@
             {% else %}
                 Sin categoría
            
-               {% endif %}
+            {% endif %}
         </p>
 
         <p>
@@ -50,4 +50,15 @@
         {# agregamos un enlace a la vista  particuar de un ticket  #}
         <a href="{{ path('app_ticket_show', { code: ticket.code }) }}">ver detalle</a>
     </div>
+    {% if is_granted('ROLE_AGENT') %}
+        <div class="ticket-actions">
+            <a
+                class="button button-outline"
+                href="{{ path('app_ticket_edit', { code: ticket.code }) }}"
+            >
+                Editar
+                
+            </a>
+        </div>
+    {% endif %}
 </article>
