@@ -13,10 +13,7 @@ use App\Model\TicketStatus;
 use Symfony\Component\Validator\Constraints as Assert;
 final class TicketEditData
 {
-   /* #[Assert\NotBlank(
-        message: 'El código es obligatorio',
-        normalizer: 'trim'
-    )]*/
+   
 
     public string $code = '';
 

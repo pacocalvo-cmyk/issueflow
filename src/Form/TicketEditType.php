@@ -5,7 +5,7 @@ declare(strict_types=1);
 
 namespace App\Form;
 
-
+use Symfony\Component\Form\AbstractType;
 use App\Entity\Category;
 use App\Entity\User;
 use App\Form\Model\TicketEditData;
@@ -19,7 +19,7 @@ use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
 
-use Symfony\Component\Form\AbstractType;
+
 
 final class TicketEditType extends AbstractType
 {

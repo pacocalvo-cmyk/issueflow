@@ -7,7 +7,10 @@ namespace App\Controller;
 use App\Contract\TicketCatalogInterface;
 use App\Contract\TicketSlaCalculatorInterface;
 use App\Form\Model\TicketCreateData;
+use App\Form\Model\TicketEditData;
 use App\Form\Model\TicketSearchCriteria;
+use App\Form\TicketDeleteType;
+use App\Form\TicketEditType;
 use App\Form\TicketFilterType;
 use App\Form\TicketType;
 use App\Service\TicketPaginator;
@@ -19,9 +22,6 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpFoundation\Exception\BadRequestException;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
-use App\Form\Model\TicketEditData;
-use App\Form\TicketEditType;
-
 final class TicketController extends AbstractController
 {
     /* Constructor de TicketController 
@@ -74,11 +74,16 @@ final class TicketController extends AbstractController
          */
         $ticketPage = $this->ticketPaginator->getTicketPage($criteria, $request->query->get('page'));
 
+        $deleteForm = $this->createForm(TicketDeleteType::class);
+
+
+
         return $this->render('ticket/index.html.twig', [
             'title' => 'Incidencias',
             'lastTicketCode' => $lastTicketCode,
             'filterForm' => $filterForm,
             'ticketPage' => $ticketPage,
+            'deleteForm' => $deleteForm
         ]);
     }
 
@@ -164,33 +169,47 @@ final class TicketController extends AbstractController
             'form' => $form,
         ]);
     }
-
-    
-
     #[Route('/tickets/{code}/edit', name: 'app_ticket_edit', methods: ['GET', 'POST'])]
-
     #[IsGranted(
         'ROLE_AGENT',
         message: 'Necesitas permisos de agente para modificar incidencias.'
     )]
-
     public function edit(string $code, Request $request): Response
     {
+        // Solicitar el ticket a la base de datos
         $ticket = $this->ticketCatalog->findByCode($code);
 
-        if ($ticket === NULL) {
+        // Si el ticket no existe, lanzamos un error 404 (NOT_FOUND)
+        if ($ticket === null) {
             throw $this->createNotFoundException('No existe la incidencia');
         }
 
-       $data = TicketEditData::fromTicket($ticket);
+        // Estructura de datos (dto) que almacena la información del formulario
+        // La iniciamos con los datos del ticket en cuestión
+        $data = TicketEditData::fromTicket($ticket);
 
+        // Creamos el formulario tipo TicketEditType y asignamos $data para almacenar su información
         $form = $this->createForm(TicketEditType::class, $data);
 
+        /**
+         * Procesamos el formulario
+         * El método handleRequest() hace lo siguiente:
+         * 1- Detecta si el formulario ya ha sido enviado
+         * 2- Extrae los datos correspondientes del Request
+         * 3- Transforma los valores al tipo esperado
+         * 4- Aisgna los datos al DTO (TicketCreateData)
+         */
         $form->handleRequest($request);
 
+        /**
+         * Si el formulario fue enviado y es válido, guardamos los cambios en la base de datos
+         * y redireccionamos al usuario al listado de tickets
+         */
         if ($form->isSubmitted() && $form->isValid()) {
+            // Aplicamos los cambios a la entidad $ticket
             $data->applyToTicket($ticket);
-
+            
+            // Hacemos un flush() para actualizar en la base de datos
             $this->entityManager->flush();
 
             $this->addFlash(
@@ -198,18 +217,63 @@ final class TicketController extends AbstractController
                 sprintf('Incidencia %s actualizada correctamente.', $ticket->getCode())
             );
 
-            return $this->redirectToRoute(
-                'app_ticket_index',
-                
-            );
+            // Completo el proceso redireccionando al usuario al listado de tickets
+            return $this->redirectToRoute('app_ticket_index');
         }
 
+        /**
+         * Si el formulario no ha sido enviado o fue enviado pero no es válido,
+         * le mostramos el formulario al cliente
+         */
         return $this->render('ticket/edit.html.twig', [
-            'form' => $form,
             'ticket' => $ticket,
+            'form' => $form
         ]);
+    }
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+    #[Route('/tickets/{code}/delete', name: 'app_ticket_delete', methods: ['POST'])]
+
+    #[IsGranted(
+        'ROLE_AGENT',
+        message: 'Necesitas permisos de agente para crear incidencias.'
+    )]
+    public function delete(string $code, Request $request)
+    {
+$ticket = $this->ticketCatalog->findByCode($code);
+
+        if ($ticket === NULL) {
+            throw $this->createNotFoundException('No existe la incidencia');
+           
+
+            
+        }
+
+        $form = $this->createForm(TicketDeleteType::class);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $this->entityManager->remove($ticket);
+            $this->entityManager->flush();
+
+
+
+            return $this->redirectToRoute('app_ticket_index');
+        }
+
+        throw $this->createNotFoundException('Formulario de eliminaciónno válido');
 
     }
 

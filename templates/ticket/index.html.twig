@@ -29,13 +29,14 @@
     #}
     <section class="filter-card">
         {# Inicio del formulario de filtrado #} 
-        {{ form_start(filterForm, { attr: { class: 'filter-form'} }) }}
+        {{ form_start(filterForm, { attr: { class: 'filter-form' } }) }}
             {# Campos de entrada del formulario de filtrado #}
             {{ form_row(filterForm.query) }}
             {{ form_row(filterForm.priority) }}
             {{ form_row(filterForm.status) }}
             {{ form_row(filterForm.category) }}
             {{ form_row(filterForm.assignee) }}
+
             <div class="filter-actions">
                 {# Botón para aplicar los filtros #}
                 {{ form_widget(filterForm.filter) }}
@@ -76,7 +77,37 @@
         {% endfor %}
     </div>
 
-    {# Controles de navegación del paginador #}
+    {% if is_granted('ROLE_AGENT') %}
+        <dialog
+            id="delete-ticket-modal"
+            class="confirm-dialog"
+        >
+            <h2>Eliminar incidencia</h2>
+            <p>¿Seguro que quieres eliminar la incidencia <strong data-delete-ticket-code></strong>?</p>
+            <p data-delete-ticket-title></p>
+            <p>Esta acción no se puede deshacer.</p>
+
+
+            {{ form_start(deleteForm, { attr: { id: 'delete-ticket-form' } }) }}
+              
+                <div class="modal-actions">
+                    
+                    <button
+                        type="button"
+                        class="button button-outline"
+                        data-modal-close
+                    >Cancelar</button>
+
+
+                    {{ form_widget(deleteForm.delete) }}
+
+                </div>
+            {{ form_end(deleteForm) }}
+        </dialog>
+
+
+
+    {% endif %}    {# Controles de navegación del paginador #}
     {#
         El método hasToPaginate() verifica si es necesario paginar, esto es, si los
         resultados no caben en una sola página 
@@ -94,7 +125,7 @@
             #}
             {% if ticketPage.hasPreviousPage() %}
                 <a
-                    class="button button-outline" 
+                    class="button button-outline"
                     href="{{ path('app_ticket_index', params|merge({ page: ticketPage.getPageNumber() - 1 })) }}"
                 >
                     ← Anterior
@@ -110,7 +141,7 @@
             #}
             {% if ticketPage.hasNextPage() %}
                 <a
-                    class="button button-outline" 
+                    class="button button-outline"
                     href="{{ path('app_ticket_index', params|merge({ page: ticketPage.getPageNumber() + 1 })) }}"
                 >
                     Siguiente →
