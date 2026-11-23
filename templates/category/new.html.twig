@@ -1,0 +1,17 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Nueva categoría · IssueFlow{% endblock %}
+
+{% block body %}
+    <div class="page-header"><div><p class="eyebrow">Gestión</p><h1>Nueva categoría</h1></div></div>
+    <section class="form-card">
+        <p class="form-description">Añade una categoría para organizar las incidencias.</p>
+        {{ form_start(form) }}
+            {{ form_row(form.name) }}
+            <div class="form-actions">
+                {{ form_widget(form.save) }}
+                <a class="button button-outline" href="{{ path('app_category_index') }}">Cancelar</a>
+            </div>
+        {{ form_end(form) }}
+    </section>
+{% endblock %}

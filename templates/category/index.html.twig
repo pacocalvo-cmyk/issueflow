@@ -1,0 +1,52 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Categorías · IssueFlow{% endblock %}
+
+{% block body %}
+    <div class="page-header">
+        <div>
+            <p class="eyebrow">IssueFlow</p>
+            <h1>Categorías</h1>
+        </div>
+        {% if is_granted('ROLE_AGENT') %}
+            <a class="button" href="{{ path('app_category_new') }}">Nueva categoría</a>
+        {% endif %}
+        <p class="counter">{{ categories|length }} categorías</p>
+    </div>
+
+    {% for message in app.flashes('success') %}
+        <p class="flash-success">{{ message }}</p>
+    {% endfor %}
+
+    <section class="filter-card">
+        {{ form_start(filterForm, { attr: { class: 'category-filter-form' } }) }}
+            {{ form_row(filterForm.name) }}
+            <div class="filter-actions">
+                {{ form_widget(filterForm.filter) }}
+                <a class="button button-outline" href="{{ path('app_category_index') }}">Limpiar</a>
+            </div>
+        {{ form_end(filterForm) }}
+    </section>
+
+    <div class="category-list">
+        {% for category in categories %}
+            {% include 'category/_category_card.html.twig' with { category: category } only %}
+        {% else %}
+            <p>{% if searchName %}No hay categorías que coincidan con «{{ searchName }}».{% else %}Todavía no hay categorías.{% endif %}</p>
+        {% endfor %}
+    </div>
+
+    {% if is_granted('ROLE_AGENT') %}
+        <dialog id="delete-category-modal" class="confirm-dialog">
+            <h2>Eliminar categoría</h2>
+            <p>¿Seguro que quieres eliminar <strong data-delete-category-name></strong>?</p>
+            <p>Los tickets asociados se conservarán sin categoría.</p>
+            {{ form_start(deleteForm, { attr: { id: 'delete-category-form' } }) }}
+                <div class="modal-actions">
+                    <button type="button" class="button button-outline" data-category-modal-close>Cancelar</button>
+                    {{ form_widget(deleteForm.delete) }}
+                </div>
+            {{ form_end(deleteForm) }}
+        </dialog>
+    {% endif %}
+{% endblock %}

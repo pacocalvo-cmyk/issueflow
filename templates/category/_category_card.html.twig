@@ -1,0 +1,15 @@
+<article class="category-card">
+    <h2>{{ category.name }}</h2>
+    {% if is_granted('ROLE_AGENT') %}
+        <div class="ticket-actions">
+            <a class="button button-outline" href="{{ path('app_category_edit', { id: category.id }) }}">Editar</a>
+            <button
+                type="button"
+                class="button button-danger-outline"
+                data-delete-category
+                data-delete-url="{{ path('app_category_delete', { id: category.id }) }}"
+                data-delete-name="{{ category.name }}"
+            >Eliminar</button>
+        </div>
+    {% endif %}
+</article>

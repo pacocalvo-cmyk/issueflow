@@ -67,6 +67,7 @@ main {
 /* Componentes visuales reutilizados en home y tickets. */
 .hero,
 .ticket-card,
+.category-card,
 .ticket-detail,
 .form-card {
     background: white;
@@ -99,6 +100,39 @@ main {
 .ticket-list {
     display: grid;
     gap: .85rem;
+}
+
+.category-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: .85rem;
+}
+
+.category-card h2 {
+    margin: 0;
+    font-size: 1.05rem;
+}
+
+.category-card .ticket-actions {
+    flex-wrap: wrap;
+}
+
+.category-filter-form {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: end;
+    gap: .75rem;
+}
+
+.category-filter-form > div {
+    margin: 0;
+}
+
+.form-actions {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: .75rem;
 }
 
 .ticket-card {
@@ -351,6 +385,10 @@ input[type="submit"]:focus-visible {
     .ticket-card {
         align-items: flex-start;
         flex-direction: column;
+    }
+
+    .category-filter-form {
+        grid-template-columns: 1fr;
     }
 }
 /* Clase 26 · filtros y paginación */

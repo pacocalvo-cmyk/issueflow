@@ -1,0 +1,17 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Editar categoría · IssueFlow{% endblock %}
+
+{% block body %}
+    <div class="page-header"><div><p class="eyebrow">Gestión</p><h1>Editar categoría</h1></div></div>
+    <section class="form-card">
+        <p class="form-description">Actualiza el nombre de «{{ category.name }}».</p>
+        {{ form_start(form) }}
+            {{ form_row(form.name) }}
+            <div class="form-actions">
+                {{ form_widget(form.save) }}
+                <a class="button button-outline" href="{{ path('app_category_index') }}">Cancelar</a>
+            </div>
+        {{ form_end(form) }}
+    </section>
+{% endblock %}

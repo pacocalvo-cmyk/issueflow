@@ -77,6 +77,46 @@ document.addEventListener('click', (event) => {
     }
 });
 
+document.addEventListener('click', (event) => {
+    if (!(event.target instanceof Element)) {
+        return;
+    }
+
+    const modal = document.getElementById('delete-category-modal');
+    const deleteButton = event.target.closest('[data-delete-category]');
+    if (deleteButton && modal) {
+        const form = document.getElementById('delete-category-form');
+        const name = modal.querySelector('[data-delete-category-name]');
+        if (!form || !name) {
+            return;
+        }
+
+        form.action = deleteButton.dataset.deleteUrl;
+        name.textContent = deleteButton.dataset.deleteName;
+        if (modal.open && !modal.matches(':modal')) {
+            modal.removeAttribute('open');
+        }
+        if (!modal.open) {
+            modal.showModal();
+        }
+        return;
+    }
+
+    if (event.target.closest('[data-category-modal-close]') && modal?.open) {
+        modal.close();
+    }
+});
+
+document.addEventListener('submit', (event) => {
+    if (event.target instanceof HTMLFormElement && event.target.id === 'delete-category-form') {
+        document.getElementById('delete-category-modal')?.close();
+    }
+});
+
+document.addEventListener('turbo:before-cache', () => {
+    document.getElementById('delete-category-modal')?.close();
+});
+
 // El diálogo debe quedar cerrado mientras se envía la eliminación.
 document.addEventListener('submit', (event) => {
     if (event.target instanceof HTMLFormElement && event.target.id === 'delete-ticket-form') {

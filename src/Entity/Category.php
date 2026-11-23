@@ -8,12 +8,13 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use App\Repository\CategoryRepository;
 use InvalidArgumentException;
 
 /**
  * Categorías
  */
-#[ORM\Entity]
+#[ORM\Entity(repositoryClass: CategoryRepository::class)]
 #[ORM\Table(name: 'categories')]
 final class Category
 {
@@ -44,7 +45,7 @@ final class Category
 
         // Si el nombre normalizado está vacío lanzo un error
         if ($normalizedName === '') {
-            throw new InvalidArgumentException('El nombre del usuario no puede estar vacío');
+            throw new InvalidArgumentException('El nombre de la categoría no puede estar vacío');
         }
 
         $this->name = $normalizedName;
@@ -61,6 +62,16 @@ final class Category
     public function getName(): string
     {
         return $this->name;
+    }
+
+    public function changeName(string $name): void
+    {
+        $normalizedName = trim($name);
+        if ($normalizedName === '') {
+            throw new InvalidArgumentException('El nombre de la categoría no puede estar vacío');
+        }
+
+        $this->name = $normalizedName;
     }
 
     // En un objeto Category, ahora puedo acceder al listado de Tickets que pertenecen a esa categoría
